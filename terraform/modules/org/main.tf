@@ -13,6 +13,21 @@ data "google_organization" "org" {
   domain = var.org_domain
 }
 
+resource "google_cloud_identity_group" "org_admins" {
+  display_name = "Org Admins"
+  description  = "Users responsible for managing the organization"
+
+  parent = data.google_organization.org.name
+
+  group_key {
+      id = "admins@${data.google_organization.org.domain}"
+  }
+
+  labels = {
+    "cloudidentity.googleapis.com/groups.discussion_forum" = ""
+  }
+}
+
 resource "google_organization_iam_binding" "org_admin_folder_creator" {
   org_id  = data.google_organization.org.org_id
   role    = "roles/resourcemanager.folderCreator"
